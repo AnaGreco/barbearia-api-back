@@ -1,10 +1,10 @@
 {
     "env" :{
 
-        "MYSQL_USER" : "root",
-        "MYSQL_PASSWORD" : "loja1373",
-        "MYSQL_DATABASE" : "brb",
-        "MYSQL_HOST" : "localhost",
+        "MYSQL_USER" : "bfea2d1ade6cfe",
+        "MYSQL_PASSWORD" : "ad3d33a6",
+        "MYSQL_DATABASE" : "heroku_ac8d858389316a2",
+        "MYSQL_HOST" : "us-cdbr-east-04.cleardb.com",
         "MYSQL_PORT" : "3306",
         "JWT_KEY" : "api@univesp@"
     }
