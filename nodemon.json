@@ -1,0 +1,11 @@
+{
+    "env" :{
+
+        "MYSQL_USER" : "root",
+        "MYSQL_PASSWORD" : "loja1373",
+        "MYSQL_DATABASE" : "brb",
+        "MYSQL_HOST" : "localhost",
+        "MYSQL_PORT" : "3306",
+        "JWT_KEY" : "api@univesp@"
+    }
+}
