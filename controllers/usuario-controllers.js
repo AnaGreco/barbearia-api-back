@@ -15,9 +15,9 @@ exports.getCadastro = (req, res, next) => {
                 } else {
                     bcrypt.hash(req.body.desc_password, 10, (errBcrypt, hash) => {
                         if (errBcrypt) { return res.status(500).send({ error: errBcrypt }) }
-                        conn.query(
-                            'INSERT INTO acesso (desc_email, desc_nome, desc_password, dat_registro) VALUES (?,?,?,?)',
-                            [req.body.desc_email, req.body.desc_nome, hash, req.body.dat_data],
+                        const query = `INSERT INTO acesso (desc_email, desc_nome, desc_password, dat_registro) 
+                                       VALUES(?, ?, ?, ?)`
+                        conn.query(query, [req.body.desc_email, req.body.desc_nome, hash, req.body.dat_data],
                             (error, results) => {
                                 conn.release();
                                 if (error) { return res.status(500).send({ error: error }) }
@@ -66,57 +66,33 @@ exports.getLogin = (req, res, next) => {
             });
         });
     });
-} 
-//Metodo lista todos os dias e horarios na tabela de agendamento.
-exports.getHorarios = (req, res, next) => {
-    mysql.getConnection((error, conn) => {
-        if (error) { return res.status(500).send({ error: error }) }
-        const query = `SELECT dat_dataag, desc_horario FROM agendamento order by 1`;
-        conn.query(query, (error, results, fields) => {
-            conn.release();
-            if (error) { return res.status(500).send({ error: error }) }
-            const response = {
-                lista: {
-                    dat_dataag: req.body.dat_dataag,
-                    desc_horario: req.body.desc_horario,
-                    request: {
-                        tipo: 'GET',
-                        descricao: 'Lista de agendamentos dias e horarios.',
-                        url: 'http://localhost:3000/horarios'
-                    }
-                }
-            }
-            return res.status(201).send({ response });
-        });
-    });
 }
-//Metodo para realizar o agendamento.
+//Metodo agenda um dia e horario.
 exports.getAgendar = (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
-        const query = `SELECT * FROM agendamento WHERE dat_dataag = ? AND desc_horario = ?`;
-        conn.query(query, [req.body.dat_dataag, req.body.desc_horario],
+        conn.query('SELECT * FROM acesso WHERE dat_dataag = ? AND desc_horario = ?',
+            [req.body.dat_dataag, req.body.desc_horario],
             (error, results) => {
                 if (error) { return res.status(500).send({ error: error }) }
                 if (results.length > 0) {
-                    res.status(409).send({ mensagem: 'Erro ao trazer so dados dia e horario.' })
+                    res.status(409).send({ mensagem: 'Já existe um agendamento.' })
                 } else {
-                        const query2 = ``;
-                        conn.query(
-                            'INSERT INTO acesso (desc_email, desc_nome, desc_password, dat_registro) VALUES (?,?,?,?)',
-                            [req.body.desc_email, req.body.desc_nome, hash, req.body.dat_data],
-                            (error, results) => {
-                                conn.release();
-                                if (error) { return res.status(500).send({ error: error }) }
-                                response = {
-                                    mensagem: 'Usuario criado com sucesso',
-                                    usuarioCriado: {
-                                        id_login: results.insertId,
-                                        desc_email: req.body.desc_email
-                                    }
+                    conn.query(
+                        'INSERT INTO agendamento (dat_dataag, desc_horario) VALUES (?,?)',
+                        [req.body.dat_dataag, req.body.desc_horario],
+                        (error, result) => {
+                            conn.release();
+                            if (error) { return res.status(500).send({ error: error }) }
+                            response = {
+                                mensagem: 'Agendamento realizado com sucesso.',
+                                usuarioCriado: {
+                                    id_login: result.insertId,
+                                    desc_email: req.body.desc_email
                                 }
-                                return res.status(201).send({ response })
-                            });
+                            }
+                            return res.status(201).send({ response })
+                        });
                 }
             });
     });
